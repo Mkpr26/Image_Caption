@@ -12,7 +12,7 @@ from PIL import Image
 
 st.set_page_config(page_title="Image Caption Generator", layout="centered")
 st.title(" Image Caption Generator")
-st.write("Upload an image, and the trained deep learning model will describe it!")
+st.write("Upload an image, and the trained deep learning model will generate Caption!")
 
 @st.cache_resource
 def load_caption_model():
@@ -67,7 +67,6 @@ def load_encodings():
 
 
 features, tokenizer, max_length = load_encodings()
-st.success(f"Tokenizer loaded successfully (max_length = {max_length})")
 
 @st.cache_resource
 def get_feature_extractor():
@@ -144,19 +143,13 @@ def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_
                 new_score = score - np.log(preds[word_idx] + 1e-7)
                 all_candidates.append([new_seq, new_score])
 
-        #  Keep top beam_width candidates only
         sequences = sorted(all_candidates, key=lambda tup: tup[1])[:beam_width]
-
-    # ✅ Final caption cleanup
+        
     final_caption = sequences[0][0]
     final_caption = final_caption.replace('startseq', '').replace('endseq', '').strip()
     return final_caption
 
-
-# ---------------------------------------------------------------
-# 📸 STREAMLIT INTERFACE
-# ---------------------------------------------------------------
-uploaded_file = st.file_uploader("📤 Upload an Image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader(" Upload an Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     #  Save uploaded image inside 'Images' folder
@@ -173,11 +166,11 @@ if uploaded_file is not None:
     st.image(Image.open(uploaded_file), caption="Uploaded Image", use_container_width=True)
 
     #  Extract CNN features using same preprocessing as training
-    with st.spinner("🔍 Extracting image features..."):
+    with st.spinner(" Extracting image features..."):
         photo_features = extract_features(image_path)
 
     #  Generate caption using beam search
-    with st.spinner("🧠 Generating caption..."):
+    with st.spinner(" Generating caption..."):
         caption = generate_caption_beam_search(model, tokenizer, photo_features, max_length, beam_width=5)
 
     st.success(" Caption Generated Successfully!")
