@@ -35,14 +35,9 @@ If you want to use the **Flickr30k** dataset, you can replace the Flickr8k image
 | Component | Description |
 |------------|-------------|
 | **Feature Extractor** | Pre-trained **VGG16** model (removes last classification layer) |
-
 | **Sequence Model** | LSTM network trained on caption sequences |
-
 | **Embedding Layer** | Converts words into dense 256-dimensional vectors |
-
 | **Dense Layers** | Combine CNN features + LSTM output |
-
 | **Final Layer** | Softmax layer to predict the next word in the caption sequence |
 
-## 📁 Folder Structure
 
