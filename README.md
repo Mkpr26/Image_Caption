@@ -3,7 +3,7 @@
 An AI-powered **Image Caption Generator** that automatically describes the content of an image in natural language.  
 This project combines **Computer Vision (VGG16)** and **Natural Language Processing (LSTM + Embedding)** to generate captions for real-world images.
 
-# Streamlit app link for Demo :  https://mkpr26-imagecaptiongenerate.streamlit.app/
+Streamlit app link for Demo :  https://mkpr26-imagecaptiongenerate.streamlit.app/
 
 ## 🚀 Project Overview
 
