@@ -1,7 +1,3 @@
-# ---------------------------------------------------------------
-# 🖼️ IMAGE CAPTION GENERATOR (FINAL WORKING STREAMLIT VERSION)
-# Author: Manish Kumar
-# ---------------------------------------------------------------
 
 import streamlit as st
 import numpy as np
@@ -14,33 +10,23 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
 from PIL import Image
 
-# ---------------------------------------------------------------
-# 🌐 PAGE CONFIG
-# ---------------------------------------------------------------
 st.set_page_config(page_title="Image Caption Generator", layout="centered")
-st.title("🖼️ Image Caption Generator")
+st.title(" Image Caption Generator")
 st.write("Upload an image, and the trained deep learning model will describe it!")
 
-# ---------------------------------------------------------------
-# ⚙️ LOAD MODEL SAFELY
-# ---------------------------------------------------------------
 @st.cache_resource
 def load_caption_model():
     try:
         model = tf.keras.models.load_model("best_model_fixed.keras", compile=False)
         return model
     except Exception as e:
-        st.error("❌ Error loading model. Please ensure best_model_fixed.keras exists and is valid.")
+        st.error(" Error loading model. Please ensure best_model_fixed.keras exists and is valid.")
         st.exception(e)
         st.stop()
 
 
 model = load_caption_model()
-st.success("✅ Model loaded successfully!")
 
-# ---------------------------------------------------------------
-# ⚙️ LOAD TOKENIZER + FEATURES
-# ---------------------------------------------------------------
 @st.cache_resource
 def load_encodings():
     """Load tokenizer and features safely."""
@@ -55,11 +41,11 @@ def load_encodings():
     features_path = os.path.join(base_dir, "Processed_Feature", "features.pkl")
 
     if not tokenizer_path:
-        st.error("❌ Tokenizer file not found! Please ensure 'tokenizer.pkl' or 'tokenizer_data.pkl' exists beside app.py.")
+        st.error(" Tokenizer file not found! Please ensure 'tokenizer.pkl' or 'tokenizer_data.pkl' exists beside app.py.")
         st.stop()
 
     if not os.path.exists(features_path):
-        st.error("❌ features.pkl not found in Processed_Feature folder!")
+        st.error(" features.pkl not found in Processed_Feature folder!")
         st.stop()
 
     # Load tokenizer
@@ -81,11 +67,8 @@ def load_encodings():
 
 
 features, tokenizer, max_length = load_encodings()
-st.success(f"✅ Tokenizer loaded successfully (max_length = {max_length})")
+st.success(f"Tokenizer loaded successfully (max_length = {max_length})")
 
-# ---------------------------------------------------------------
-# 🧠 FEATURE EXTRACTOR (VGG16)
-# ---------------------------------------------------------------
 @st.cache_resource
 def get_feature_extractor():
     base_model = VGG16()
@@ -106,9 +89,7 @@ def extract_features(img_path):
     return feature
 
 
-# ---------------------------------------------------------------
-# 🧾 CAPTION GENERATION (GREEDY SEARCH)
-# ---------------------------------------------------------------
+
 def word_for_id(integer, tokenizer):
     """Convert predicted integer back to word."""
     for word, index in tokenizer.word_index.items():
@@ -119,7 +100,7 @@ def word_for_id(integer, tokenizer):
 
 def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_width=5):
     """Generate accurate captions using Beam Search with automatic length detection."""
-    # ✅ Automatically detect correct max_length from model input
+    #  Automatically detect correct max_length from model input
     if max_length is None:
         try:
             # Model expects [photo_input, sequence_input]
@@ -140,7 +121,7 @@ def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_
             # Convert text → tokens
             sequence = tokenizer.texts_to_sequences([seq])[0]
 
-            # ✅ Trim or pad sequence EXACTLY to model_max_len
+            #  Trim or pad sequence EXACTLY to model_max_len
             if len(sequence) > model_max_len:
                 sequence = sequence[-model_max_len:]
             else:
@@ -148,7 +129,7 @@ def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_
 
             sequence = pad_sequences([sequence], maxlen=model_max_len, padding='post', truncating='post')
 
-            # ✅ Predict next token
+            # Predict next token
             preds = model.predict([photo, sequence], verbose=0)
             preds = preds[0]
 
@@ -163,7 +144,7 @@ def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_
                 new_score = score - np.log(preds[word_idx] + 1e-7)
                 all_candidates.append([new_seq, new_score])
 
-        # ✅ Keep top beam_width candidates only
+        #  Keep top beam_width candidates only
         sequences = sorted(all_candidates, key=lambda tup: tup[1])[:beam_width]
 
     # ✅ Final caption cleanup
@@ -178,7 +159,7 @@ def generate_caption_beam_search(model, tokenizer, photo, max_length=None, beam_
 uploaded_file = st.file_uploader("📤 Upload an Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # ✅ Save uploaded image inside 'Images' folder
+    #  Save uploaded image inside 'Images' folder
     images_dir = "data/Images"
     os.makedirs(images_dir, exist_ok=True)
 
@@ -188,30 +169,18 @@ if uploaded_file is not None:
     with open(image_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    # ✅ Display the uploaded image
+    #  Display the uploaded image
     st.image(Image.open(uploaded_file), caption="Uploaded Image", use_container_width=True)
 
-    # ✅ Extract CNN features using same preprocessing as training
+    #  Extract CNN features using same preprocessing as training
     with st.spinner("🔍 Extracting image features..."):
         photo_features = extract_features(image_path)
 
-    # ✅ Generate caption using beam search
+    #  Generate caption using beam search
     with st.spinner("🧠 Generating caption..."):
         caption = generate_caption_beam_search(model, tokenizer, photo_features, max_length, beam_width=5)
 
-    st.success("✅ Caption Generated Successfully!")
-    st.subheader("📝 Generated Caption:")
+    st.success(" Caption Generated Successfully!")
+    st.subheader(" Generated Caption:")
     st.markdown(f"**{caption}**")
 
-
-# ---------------------------------------------------------------
-# 🧩 FOOTER
-# ---------------------------------------------------------------
-st.markdown("---")
-st.info("""
-### 🧠 Notes:
-- `best_model_fixed.keras` → your trained image captioning model  
-- `tokenizer.pkl` or `tokenizer_data.pkl` → tokenizer & max_length  
-- `Processed_Feature/features.pkl` → preprocessed CNN features  
-- Run this file using:
-""")
