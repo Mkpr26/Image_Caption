@@ -1,45 +1,48 @@
-# 🖼️ Image Caption Generator using Deep Learning
+# Image Caption Generator 🖼️
 
-This project is a **Deep Learning–based Image Caption Generator** built with **TensorFlow, Keras, and Streamlit**.  
-It automatically generates meaningful captions for uploaded images using a pre-trained CNN + LSTM model.
+An AI-powered **Image Caption Generator** that automatically describes the content of an image in natural language.  
+This project combines **Computer Vision (VGG16)** and **Natural Language Processing (LSTM + Embedding)** to generate captions for real-world images.
 
-## 🚀 Demo App
+# Streamlit app link for Demo :  https://mkpr26-imagecaptiongenerate.streamlit.app/
 
-🌐 **Streamlit Web App:**  
+## 🚀 Project Overview
 
-> Upload an image and you will see the caption generate :
->
-> 📦 image-caption-generator/
-├── app.py                     # Streamlit frontend app
-> 
-├── best_model.h5 / best_model_fixed.keras   # Trained image caption model
+-->The model learns to generate meaningful captions by training on the **Kaggle Flickr8k dataset**, which contains 8,000 images and 5 captions per image.
 
-├── tokenizer.pkl              # Tokenizer file (maps words <-> tokens)
-├── Processed_Feature/
-│   └── features.pkl           # Preprocessed VGG16 CNN features
+--> Each image is processed through a **CNN (VGG16)** for feature extraction, and captions are processed via **RNN (LSTM)** for sequence generation.
 
-├── captions.txt               # Original caption dataset (for tokenizer creation)
+--> After training, the model is deployed using **Streamlit**, allowing users to upload any image and get an automatically generated caption.
 
-├── create_tokenizer.py        # Script to create and save tokenizer.pkl
 
-├── requirements.txt           # Required Python dependencies
+## 📂 Dataset Information
 
-└── README.md                  # You’re reading it :)
+**Dataset Used:** [Flickr8k Dataset on Kaggle](https://www.kaggle.com/datasets/adityajn105/flickr8k)
 
-🧠 How It Works: 
+- **Images:** 8,091 JPEG images (`.jpg`)
+- 
+- **Captions:** Each image has 5 textual captions
+- 
+- **Total Captions:** ~40,456
+- 
+- **File Used:** `captions.txt` (contains mappings between images and their captions)
+- 
+- **Image Folder:** `Images/`
 
-This model combines Computer Vision (VGG16) and Natural Language Processing (LSTM):
+If you want to use the **Flickr30k** dataset, you can replace the Flickr8k images and caption file — the same preprocessing and model structure will work.
 
-Feature Extraction:
-Uses a pre-trained VGG16 CNN to extract image features (4096-d vector).
+## 🧠 Model Architecture
 
-Sequence Modeling:
-An LSTM-based sequence generator predicts the next word in a caption based on previous words and image context.
+| Component | Description |
+|------------|-------------|
+| **Feature Extractor** | Pre-trained **VGG16** model (removes last classification layer) |
 
-Beam Search / Greedy Decoding:
-Generates captions word by word until the <endseq> token is reached.
+| **Sequence Model** | LSTM network trained on caption sequences |
 
-Streamlit Frontend:
-Lets you upload an image, view it, and display the generated caption in real time.
+| **Embedding Layer** | Converts words into dense 256-dimensional vectors |
 
+| **Dense Layers** | Combine CNN features + LSTM output |
+
+| **Final Layer** | Softmax layer to predict the next word in the caption sequence |
+
+## 📁 Folder Structure
 
